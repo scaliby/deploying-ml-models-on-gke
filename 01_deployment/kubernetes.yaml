@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rock-paper-scissors-model
+  labels:
+    app: rock-paper-scissors-model
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: rock-paper-scissors-model
+  template:
+    metadata:
+      labels:
+        app: rock-paper-scissors-model
+    spec:
+      containers:
+      - name: serving
+        image: ${DOCKER_IMAGE}
+        env:
+        - value: rock_paper_scissors
+          name: MODEL_NAME
+        ports:
+        - containerPort: 8501
+          name: http-port
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2Gi
+            ephemeral-storage: 128Mi
+          requests:
+            cpu: "2"
+            memory: 2Gi
+            ephemeral-storage: 64Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rock-paper-scissors-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: rock-paper-scissors-model
+  ports:
+  - name: http-api
+    protocol: TCP
+    targetPort: http-port
+    port: 8501
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: rock-paper-scissors-model
+spec:
+  maxReplicas: 5
+  metrics:
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: 60
+        type: Utilization
+    type: Resource
+  minReplicas: 3
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: rock-paper-scissors-model

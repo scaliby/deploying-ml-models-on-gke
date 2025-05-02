@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rock-paper-scissors-model
+  labels:
+    app: rock-paper-scissors-model
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: "100%"
+      maxUnavailable: "80%"
+  selector:
+    matchLabels:
+      app: rock-paper-scissors-model
+  template:
+    metadata:
+      labels:
+        app: rock-paper-scissors-model
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-accelerator: nvidia-tesla-t4
+        cloud.google.com/gke-accelerator-count: "1"
+      containers:
+      - name: serving
+        image: ${DOCKER_IMAGE}
+        env:
+        - value: rock_paper_scissors
+          name: MODEL_NAME
+        ports:
+        - containerPort: 8501
+          name: http-port
+        livenessProbe:
+          httpGet:
+            path: /v1/models/rock_paper_scissors/metadata
+            port: 8501
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /v1/models/rock_paper_scissors/metadata
+            port: 8501
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        resources:
+          limits:
+            cpu: "1"
+            memory: 2Gi
+            ephemeral-storage: 128Mi
+            nvidia.com/gpu: "1"
+          requests:
+            cpu: "1"
+            memory: 2Gi
+            ephemeral-storage: 64Mi
+            nvidia.com/gpu: "1"
