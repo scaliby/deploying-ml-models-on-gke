@@ -32,6 +32,18 @@ spec:
             cpu: "2"
             memory: 2Gi
             ephemeral-storage: 64Mi
+        livenessProbe:
+          httpGet:
+            path: /v1/models/rock_paper_scissors/metadata
+            port: 8501
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /v1/models/rock_paper_scissors/metadata
+            port: 8501
+          initialDelaySeconds: 3
+          periodSeconds: 3
 ---
 apiVersion: v1
 kind: Service
