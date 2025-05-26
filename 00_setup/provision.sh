@@ -1,6 +1,6 @@
 #! /bin/sh
 
-set -e
+#set -e
 
 echo "Enabling container.googleapis.com"
 gcloud services enable container.googleapis.com
