@@ -6,6 +6,7 @@ This repository contains everything that is needed for "Deploying ML models on G
 
 - [Create Project](https://console.cloud.google.com/projectcreate)
 - [Google Colab](https://colab.research.google.com/github/scaliby/deploying-ml-models-on-gke/blob/main/rock_paper_scissors.ipynb)
+- [Credits Claim](https://trygcp.dev/e/deploying-ml-models-on-gke)
 
 ## Useful commands
 - `git clone https://github.com/scaliby/deploying-ml-models-on-gke.git` - clones the repository
